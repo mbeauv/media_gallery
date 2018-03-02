@@ -1,0 +1,4 @@
+.bundle/
+*.log
+pkg/
+spec/dummy/tmp/

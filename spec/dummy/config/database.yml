@@ -1,0 +1,19 @@
+development:
+  adapter: postgresql
+  database: media_gallery_dev
+  username: internal_tester
+  password: password
+  host: localhost
+
+test:
+  adapter: postgresql
+  database: media_gallery_test
+  username: internal_tester
+  password: password
+  host: localhost
+
+production:
+  adapter: postgresql
+  database: media_gallery_prod
+  username: internal_tester
+  password: password
