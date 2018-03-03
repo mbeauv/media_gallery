@@ -2,7 +2,7 @@
 This gem provides a Rails engine that allows for the storage of images on Amazon S3.  Images are organized in galleries.  All interactions are done through a simple REST API.
 
 ## Usage
-As this is a Rails engine, you need to first mount the engine.  This can be done by modifying your config/routes.rb file.  You should add a mount point, something like:
+As this is a Rails engine, you need to mount it in your app. This can be done by modifying your config/routes.rb file.  You can add a line like:
 
 ```ruby
 mount MediaGallery::Engine => "/media_gallery"
@@ -13,7 +13,7 @@ Next, you need to deal with access control. The media_gallery engine uses [canca
 - current_user:  Returns the current user
 - create_ability: Returns an cancan Ability class for use in the media_gallery.  It can be your app's defined ability.
 
-The recommended approach for this is to create an initializer.  You can check out the one in spec/dummy app.  It defines something like:
+The recommended approach for this is to create an initializer.  You can check out the one defined in the [spec/dummy](https://github.com/mbeauv/media_gallery/blob/master/spec/dummy/config/initializers/media_gallery_initializer.rb) test app.  It defines something like:
 
 ```ruby
 MediaGallery::ApplicationController.class_eval do
@@ -27,9 +27,9 @@ MediaGallery::ApplicationController.class_eval do
   end
 end
 ```
-You can check the test app's initializer [here](https://github.com/mbeauv/media_gallery/blob/master/spec/dummy/config/initializers/media_gallery_initializer.rb).  You can also look at an example of how this can be done with Devise [here](https://github.com/mbeauv/media_gallery/wiki/Integration-with-Devise).
+You can also look at an example of how this can be done with Devise [here](https://github.com/mbeauv/media_gallery/wiki/Integration-with-Devise).
 
-Lastly, internally media_gallery uses [carrierwave](https://github.com/carrierwaveuploader/carrierwave) to interact with the S3 storage system.  Carrierwave needs to be configured appropriately.  The way we do it is through another initializer file (e.g. config/initializers/carrierwave_s3.rb) which defines something like:
+Lastly, media_gallery uses [carrierwave](https://github.com/carrierwaveuploader/carrierwave) to interact with the S3 storage system.  Carrierwave needs to be configured appropriately.  The way we do it is through another initializer file (e.g. config/initializers/carrierwave_s3.rb) which defines something like:
 
 ```ruby
 class FogSettings
@@ -60,6 +60,8 @@ CarrierWave.configure do |config|
 
 end
 ```
+
+In the previous block, the MEDIA_GALLERY_TEST_AWS... keys are fed from the environment.  You can use whatever approach you want.  If deploying in Heroku or AWS, it's better to use this approach as your deployed code does not have hardcoded values.
 
 ## Installation
 Add this line to your application's Gemfile:
