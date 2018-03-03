@@ -32,7 +32,7 @@ You can check the test app's initializer [here](https://github.com/mbeauv/media_
 Lastly, internally media_gallery uses [carrierwave](https://github.com/carrierwaveuploader/carrierwave) to interact with the S3 storage system.  Carrierwave needs to be configured appropriately.  The way we do it is through another initializer file (e.g. config/initializers/carrierwave_s3.rb) which defines something like:
 
 ```ruby
-class UrbanoeFogSettings
+class FogSettings
 
   def self.S3
     {
@@ -50,8 +50,8 @@ end
 
 CarrierWave.configure do |config|
 
-  config.fog_credentials = UrbanoeFogSettings.S3
-  config.fog_directory   = UrbanoeFogSettings.directory
+  config.fog_credentials = FogSettings.S3
+  config.fog_directory   = FogSettings.directory
 
   #The following is specifically for Heroku.  Heroku only allows you to save data
   #in the tmp folder.  We therefore make sure that the tmp files are put there.
