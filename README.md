@@ -8,7 +8,7 @@ As this is a Rails engine, you need to first mount the engine.  This can be done
 mount MediaGallery::Engine => "/media_gallery"
 ```
 
-Next, you need to deal with access control. The media_gallery engine uses cancancan for access_control. It does not make any assumptions as to what library or method you use for sign in.  It works fine with Devise if that is what you are using.  Simple JWT access should also be no problem.  You do need to override two methods in the MediaGallery::ApplicationController class.  These methods are:
+Next, you need to deal with access control. The media_gallery engine uses [cancancan](https://github.com/CanCanCommunity/cancancan) for access_control. It does not make any assumptions as to what library or method you use for sign in.  It works fine with [Devise](https://github.com/plataformatec/devise) if that is what you are using.  Simple JWT access should also be no problem.  You do need to override two methods in the MediaGallery::ApplicationController class.  These methods are:
 
 - current_user:  Returns the current user
 - create_ability: Returns an cancan Ability class for use in the media_gallery.  It can be your app's defined ability.
@@ -55,9 +55,25 @@ bin/rails media_gallery:install:migrations
 bin/rails db:migrate SCOPE=media_gallery
 ```
 ## Contributing
+
 If you want to help out, no problem. The more, the merrier.  You can fix issues if you want to or look at the list of outstanding features here.
 
-Make sure that you write unit tests.
+Make sure that you write unit tests. We presently have model and request specs.  The request specs require you to have an AWS account with S3 setup correctly.  You then need to define three environment variables:
+
+- MEDIA_GALLERY_TEST_AWS_PUBLIC
+- MEDIA_GALLERY_TEST_AWS_SECRET
+- MEDIA_GALLERY_TEST_AWS_DIR
+
+The rspecs look for these variables in your environment.  On Linux or Mac, you can add something like this to you .bash_profile
+
+```bash
+export MEDIA_GALLERY_TEST_AWS_PUBLIC=AJEJEKNJE87JS 
+export MEDIA_GALLERY_TEST_AWS_SECRET=Bskljfslkdjflksjflkjslls+sljksjlk
+export MEDIA_GALLERY_TEST_AWS_DIR=gallery2018
+```
+
+(All values provided in the previous block are fake... obviously :-)
+
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
