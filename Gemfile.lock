@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    media_gallery (1.0.0)
+    media_gallery (1.0.1)
       cancancan
       carrierwave
       fog
