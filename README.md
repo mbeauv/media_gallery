@@ -29,7 +29,7 @@ MediaGallery::ApplicationController.class_eval do
   end
 end
 ```
-You can check the test app's initializer [I'm an inline-style link](https://github.com/mbeauv/media_gallery/blob/master/spec/dummy/config/initializers/media_gallery_initializer.rb).  You can also look at an example of how this can be done with Devise here.
+You can check the test app's initializer [here](https://github.com/mbeauv/media_gallery/blob/master/spec/dummy/config/initializers/media_gallery_initializer.rb).  You can also look at an example of how this can be done with Devise [here](https://github.com/mbeauv/media_gallery/wiki/Integration-with-Devise).
 
 ## Installation
 Add this line to your application's Gemfile:
