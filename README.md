@@ -13,8 +13,6 @@ Next, you need to deal with access control. The media_gallery engine uses [canca
 - current_user:  Returns the current user
 - create_ability: Returns an cancan Ability class for use in the media_gallery.  It can be your app's defined ability.
 
-To override these methods, the best approach is probably to create a new initializer.  
-
 The recommended approach for this is to create an initializer.  You can check out the one in spec/dummy app.  It defines something like:
 
 ```ruby
