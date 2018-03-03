@@ -1,5 +1,5 @@
 # MediaGallery
-This gem provides a Rails engine that allows for the storage of images on Amazon S3.  Images are organized in galleries.  All interactions are done through a simple REST API.
+This gem provides a Rails engine that allows for the storage of images on Amazon S3.  Images are organized in galleries.  All interactions are done through a simple [REST API](https://github.com/mbeauv/media_gallery/wiki/REST-API).
 
 ## Usage
 As this is a Rails engine, you need to mount it in your app. This can be done by modifying your config/routes.rb file.  You can add a line like:
@@ -8,7 +8,7 @@ As this is a Rails engine, you need to mount it in your app. This can be done by
 mount MediaGallery::Engine => "/media_gallery"
 ```
 
-Next, you need to deal with access control. The media_gallery engine uses [cancancan](https://github.com/CanCanCommunity/cancancan) for access_control. It does not make any assumptions as to what library or method you use for sign in.  It works fine with [Devise](https://github.com/plataformatec/devise) if that is what you are using.  Simple JWT access should also be no problem.  You do need to override two methods in the MediaGallery::ApplicationController class.  These methods are:
+Next, you need to deal with access control. The media_gallery engine uses [cancancan](https://github.com/CanCanCommunity/cancancan) for access_control. It does not make any assumptions as to what library or method you use for sign in.  It works fine with [Devise](https://github.com/plataformatec/devise) if that is what you are using.  JWT access will also work. You do need to override two methods in the MediaGallery::ApplicationController class.  These methods are:
 
 - current_user:  Returns the current user
 - create_ability: Returns an cancan Ability class for use in the media_gallery.  It can be your app's defined ability.
