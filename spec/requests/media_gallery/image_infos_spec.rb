@@ -6,7 +6,7 @@ describe "ImageInfos API", :type => :request do
     @gallery = create(:gallery, ownable: @user)
   end
 
-  it 'gets a list of image infos', :focus do
+  it 'gets a list of image infos' do
     image1 = create(:image_info, gallery: @gallery, label: 'image1')
     image2 = create(:image_info, gallery: @gallery, label: 'image2')
     image3 = create(:image_info, gallery: @gallery, label: 'image3')

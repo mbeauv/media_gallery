@@ -8,7 +8,15 @@ module MediaGallery
     end
 
     rescue_from ActiveRecord::RecordInvalid do |exception|
-      render json: { message: exception.to_s }, status: 500
+      render json: { message: exception.to_s }, status: 409
+    end
+
+    rescue_from ActionController::ParameterMissing do |exception|
+      render json: { message: "Invalid content" }, status: 400
+    end
+
+    rescue_from ActiveRecord::RecordNotFound do |exception|
+      render json: { message: "Access Denied" }, status: 403
     end
 
     def current_user

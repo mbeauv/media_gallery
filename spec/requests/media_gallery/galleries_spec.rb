@@ -1,72 +1,159 @@
 describe "Galleries API", :type => :request do
 
-  before do
-    @user = create(:user)
-    @admin = create(:user, admin: true)
-    @disabled = create(:user, disabled: true)
+  BASE_URL = "/media_gallery/galleries"
+
+  def token_header(gallery)
+    { 'token': gallery.ownable.token }
   end
 
-  it 'gets a list of galleries' do
-    gallery1 = create(:gallery, ownable: @user)
-    gallery2 = create(:gallery, ownable: @user)
-    gallery3 = create(:gallery, ownable: @user)
+  describe "when showing all" do
 
-    get "/media_gallery/galleries.json", params: {}, headers: { 'token' => @user.token }
+    before do
+      @gallery1 = create(:gallery)
+      @gallery2 = create(:gallery, ownable: @gallery1.ownable)
+      @gallery3 = create(:gallery, ownable: @gallery1.ownable)
+    end
 
-    expect(response).to be_success
-    expect(JSON.parse(response.body, { symbolize_names: true })).to eq(
-      [
-        { id: gallery1.id, name: gallery1.name, nbImages: 0 },
-        { id: gallery2.id, name: gallery2.name, nbImages: 0 },
-        { id: gallery3.id, name: gallery3.name, nbImages: 0 }
-      ]
-    )
+    it 'returns 403 error when anonymous' do
+     get "#{BASE_URL}.json"
+     expect(response).to have_http_status(403)
+     json = JSON.parse(response.body, { symbolize_names: true })
+     expect(json[:message]).to eq('Access Denied')
+   end
+
+    it 'returns 200 when user (normal)' do
+      get "#{BASE_URL}.json", params: {}, headers: token_header(@gallery1)
+      expect(response).to be_success
+      expect(JSON.parse(response.body, { symbolize_names: true })).to eq(
+        [
+          { id: @gallery1.id, name: @gallery1.name, nbImages: 0 },
+          { id: @gallery2.id, name: @gallery2.name, nbImages: 0 },
+          { id: @gallery3.id, name: @gallery3.name, nbImages: 0 }
+        ]
+      )
+    end
+
   end
 
-  it 'gets one gallery' do
-    gallery1 = create(:gallery, ownable: @user)
+  describe "when showing" do
 
-    get "/media_gallery/galleries/#{gallery1.id}.json", params: {}, headers: { 'token' => @user.token }
+    before do
+      @gallery1 = create(:gallery)
+    end
 
-    expect(response).to be_success
-    json = JSON.parse(response.body, { symbolize_names: true })
-    json.delete(:createdAt)
-    expect(json).to eq({ id: gallery1.id, name: gallery1.name, nbImages: 0, description: 'a test gallery' })
+    it 'returns 403 error when anonymous' do
+      get "#{BASE_URL}/#{@gallery1.id}.json"
+      expect(response).to have_http_status(403)
+      json = JSON.parse(response.body, { symbolize_names: true })
+      expect(json[:message]).to eq('Access Denied')
+    end
+
+    it 'returns 403 error when resource not present' do
+      get "#{BASE_URL}/#{@gallery1.id + 11}.json", headers: token_header(@gallery1)
+      expect(response).to have_http_status(403)
+      json = JSON.parse(response.body, { symbolize_names: true })
+      expect(json[:message]).to eq('Access Denied')
+    end
+
+    it 'returns 200 when resource is present' do
+      get "#{BASE_URL}/#{@gallery1.id}.json", params: {}, headers: token_header(@gallery1)
+      expect(response).to be_success
+      json = JSON.parse(response.body, { symbolize_names: true })
+      json.delete(:createdAt)
+      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, nbImages: 0, description: 'a test gallery' })
+    end
+
   end
 
-  it 'updates an existing gallery' do
-    gallery1 = create(:gallery, ownable: @user)
+  describe 'when updating' do
 
-    put "/media_gallery/galleries/#{gallery1.id}.json", params: { gallery: { description: "updated description" } }, headers: { 'token' => @user.token }
+    before do
+      @gallery1 = create(:gallery)
+    end
 
-    expect(response).to be_success
-    json = JSON.parse(response.body, { symbolize_names: true })
-    json.delete(:createdAt)
-    expect(json).to eq({ id: gallery1.id, name: gallery1.name, nbImages: 0, description: "updated description" })
+    it 'returns 403 when not owner of resource' do
+      user = create(:user)
+      put "#{BASE_URL}/#{@gallery1.id}.json", headers: { token: user.token }
+      expect(response).to have_http_status(403)
+      json = JSON.parse(response.body, { symbolize_names: true })
+      expect(json[:message]).to eq('Access Denied')
+    end
+
+    it 'returns 403 error when anonymous' do
+      put "#{BASE_URL}/#{@gallery1.id}.json"
+      expect(response).to have_http_status(403)
+      json = JSON.parse(response.body, { symbolize_names: true })
+      expect(json[:message]).to eq('Access Denied')
+    end
+
+    it 'returns 200 when resource is valid' do
+      put "/media_gallery/galleries/#{@gallery1.id}.json", params: { gallery: { description: "updated description" } }, headers: token_header(@gallery1)
+      expect(response).to be_success
+      json = JSON.parse(response.body, { symbolize_names: true })
+      json.delete(:createdAt)
+      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, nbImages: 0, description: "updated description" })
+    end
+
   end
 
-  it 'deletes an existing gallery' do
-    gallery1 = create(:gallery, ownable: @user)
-    delete "/media_gallery/galleries/#{gallery1.id}.json", params: {}, headers: { 'token' => @user.token }
-    expect(response).to be_success
-    expect(MediaGallery::Gallery.exists?(gallery1.id)).to eq(false)
+  describe "when deleting" do
+
+    before do
+      @gallery1 = create(:gallery)
+    end
+
+    it 'returns 403 error when anonymous' do
+      delete "#{BASE_URL}/#{@gallery1.id}.json"
+      expect(response).to have_http_status(403)
+      json = JSON.parse(response.body, { symbolize_names: true })
+      expect(json[:message]).to eq('Access Denied')
+    end
+
+    it 'returns 403 error when resource not present' do
+      delete "#{BASE_URL}/#{@gallery1.id + 11}.json", headers: { 'token' => @gallery1.ownable.token }
+      expect(response).to have_http_status(403)
+      json = JSON.parse(response.body, { symbolize_names: true })
+      expect(json[:message]).to eq("Access Denied")
+    end
+
+    it 'returns 200 when resource type is present' do
+      delete "#{BASE_URL}/#{@gallery1.id}.json", params: {}, headers: token_header(@gallery1)
+      expect(response).to be_success
+      expect(MediaGallery::Gallery.exists?(@gallery1.id)).to eq(false)
+    end
+
   end
 
-  it 'creates a new gallery' do
-    post "/media_gallery/galleries.json", params: {
-      gallery: {
-        name: "jdoe_gallery",
-        description: "a description"
+  describe 'when creating' do
+
+    it 'returns 403 error when anonymous' do
+      post "/media_gallery/galleries.json", params: {
+        gallery: {
+          name: "jdoe_gallery",
+          description: "a description"
+        }
       }
-    }, headers: { 'token' => @user.token }
+      expect(response).to have_http_status(403)
+      json = JSON.parse(response.body, { symbolize_names: true })
+      expect(json[:message]).to eq('Access Denied')
+    end
 
-    expect(response).to be_success
-    json = JSON.parse(response.body, { symbolize_names: true })
-    json.delete(:createdAt)
+    it 'returns 200 when data is valid' do
+      user = create(:user)
+      post "/media_gallery/galleries.json", params: {
+        gallery: {
+          name: "jdoe_gallery",
+          description: "a description"
+        }
+      }, headers: { 'token' => user.token }
 
-    gallery = MediaGallery::Gallery.where(id: json[:id], name: 'jdoe_gallery', description: 'a description').first
-    expect(gallery).not_to be_nil
-    expect(json).to eq({ id: gallery.id, name: gallery.name, nbImages: 0, description: gallery.description })
+      expect(response).to be_success
+      json = JSON.parse(response.body, { symbolize_names: true })
+      json.delete(:createdAt)
+
+      gallery = MediaGallery::Gallery.where(id: json[:id], name: 'jdoe_gallery', description: 'a description').first
+      expect(gallery).not_to be_nil
+      expect(json).to eq({ id: gallery.id, name: gallery.name, nbImages: 0, description: gallery.description })
+    end
   end
-
 end

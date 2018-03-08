@@ -7,6 +7,7 @@ module MediaGallery
 
     # GET /galleries
     def index
+      raise CanCan::AccessDenied.new unless current_user
       @galleries = Gallery.where(ownable: current_user).order(name: :asc)
       authorize! :read, @galleries[0] if @galleries.length > 0
     end
