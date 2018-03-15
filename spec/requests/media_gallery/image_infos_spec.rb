@@ -32,7 +32,7 @@ describe "ImageInfos API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      json.each { |image| image.delete(:urls) }
+      json.each { |image| image.delete(:versions) }
 
       expect(json).to eq(
         [
@@ -54,7 +54,7 @@ describe "ImageInfos API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      json.delete(:urls)
+      json.delete(:versions)
       json.delete(:createdAt)
       expect(json).to eq(
         {
@@ -78,7 +78,7 @@ describe "ImageInfos API", :type => :request do
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
       json.delete(:createdAt)
-      json.delete(:urls)
+      json.delete(:versions)
       expect(json).to eq(
         {
           id: image1.id,
@@ -130,7 +130,7 @@ describe "ImageInfos API", :type => :request do
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
       json.delete(:createdAt)
-      json.delete(:urls)
+      json.delete(:versions)
 
       image = MediaGallery::ImageInfo.where(id: json[:id], label: 'jdoe_image', description: 'a description').first
       expect(json).to eq(

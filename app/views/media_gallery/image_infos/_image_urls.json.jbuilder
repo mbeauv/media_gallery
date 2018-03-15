@@ -1,6 +1,6 @@
-json.urls do
-  image = image_info.image
-  image.versions.keys.each do |key|
-    json.set! "#{key}", image.versions[key].url
+json.versions do
+  json.array! image_info.image.versions do |key, version|
+    json.name key
+    json.url version.url
   end
 end
