@@ -26,9 +26,9 @@ describe "Galleries API", :type => :request do
       expect(response).to be_success
       expect(JSON.parse(response.body, { symbolize_names: true })).to eq(
         [
-          { id: @gallery1.id, name: @gallery1.name, nbImages: 0 },
-          { id: @gallery2.id, name: @gallery2.name, nbImages: 0 },
-          { id: @gallery3.id, name: @gallery3.name, nbImages: 0 }
+          { id: @gallery1.id, name: @gallery1.name, description: @gallery1.description, nbImages: 0 },
+          { id: @gallery2.id, name: @gallery2.name, description: @gallery2.description, nbImages: 0 },
+          { id: @gallery3.id, name: @gallery3.name, description: @gallery3.description, nbImages: 0 }
         ]
       )
     end
