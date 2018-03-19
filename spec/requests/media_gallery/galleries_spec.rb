@@ -149,7 +149,6 @@ describe "Galleries API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      json.delete(:createdAt)
 
       gallery = MediaGallery::Gallery.where(id: json[:id], name: 'jdoe_gallery', description: 'a description').first
       expect(gallery).not_to be_nil
