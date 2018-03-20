@@ -60,7 +60,7 @@ describe "Galleries API", :type => :request do
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
       json.delete(:createdAt)
-      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, nbImages: 0, description: 'a test gallery' })
+      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, description: 'a test gallery', imageInfos: [] })
     end
 
   end
@@ -91,7 +91,7 @@ describe "Galleries API", :type => :request do
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
       json.delete(:createdAt)
-      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, nbImages: 0, description: "updated description" })
+      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, description: "updated description", imageInfos: [] })
     end
 
   end
