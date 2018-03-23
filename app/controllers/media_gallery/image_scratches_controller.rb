@@ -6,8 +6,9 @@ module MediaGallery
 
     # GET /image_scratches
     def index
+      raise CanCan::AccessDenied.new unless current_user
       @scratches = ImageScratch.where(ownable: current_user).all
-      authorize! :read, @scratches[0]
+      (authorize! :read, @scratches[0]) unless @scratches.empty?
     end
 
     # POST /image_scratches
