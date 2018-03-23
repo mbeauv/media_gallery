@@ -28,12 +28,12 @@ describe "ImageScratches API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json.delete(:versions)).not_to be_nil
+      expect(json.delete(:variants)).not_to be_nil
 
       scratch = MediaGallery::ImageScratch.where(id: json[:id]).first
       expect(json).to eq({
         id: scratch.id,
-        version_id: scratch.image_version.id
+        imageVersionId: scratch.image_version.id
       })
     end
   end
