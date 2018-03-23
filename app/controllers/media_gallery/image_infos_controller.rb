@@ -17,19 +17,9 @@ module MediaGallery
 
     # POST /galleries/1/image_infos
     def create
-      image_file = MediaGallery::ImageProcessing.create_photo_file(image_info_params['image'], {})
-
-      ActiveRecord::Base.transaction do
-        @image_info = ImageInfo.create!(
-          label: image_info_params[:label],
-          description: image_info_params[:description],
-          gallery: @gallery,
-        )
-        ImageVersion.create!(image: image_file, ownable: @image_info)
-        authorize! :create, @image_info
-        @image_info.save!
-      end
-
+      @image_info = use_scratch?(params) ?
+                      process_with_scratch(params, @gallery) :
+                      process_with_image(params, @gallery)
     end
 
     # PATCH/PUT /galleries/1/image_infos/1
@@ -45,9 +35,51 @@ module MediaGallery
 
     private
 
+    # Verifies if the image version saved in the user's scratch pad should
+    # be used.
+    def use_scratch?(params)
+      params[:use_scratch] && params[:use_scratch] == 'true'
+    end
+
     # Only allow a trusted parameter "white list" through.
     def image_info_params
       params.require(:image_info).permit(:label, :description, :image)
+    end
+
+    def process_with_image(params, gallery)
+      image_file = MediaGallery::ImageProcessing.create_photo_file(image_info_params['image'], {})
+
+      ActiveRecord::Base.transaction do
+        image_info = ImageInfo.create!(
+          label: image_info_params[:label],
+          description: image_info_params[:description],
+          gallery: gallery
+        )
+        ImageVersion.create!(image: image_file, ownable: image_info)
+        authorize! :create, image_info
+        image_info.save!
+        image_info
+      end
+    end
+
+    def process_with_scratch(params, gallery)
+      image_scratch = ImageScratch.where(ownable: current_user).first
+      raise MediaGallery::ScratchImageEmpty unless image_scratch;
+
+      image_info = ImageInfo.new(
+        label: image_info_params[:label],
+        description: image_info_params[:description],
+        gallery: gallery,
+        image_version: image_scratch.image_version
+      )
+
+      ActiveRecord::Base.transaction do
+        image_scratch.update(image_version: nil);
+        image_scratch.destroy
+        authorize! :create, image_info
+        image_info.save!
+        image_info
+      end
     end
   end
 end

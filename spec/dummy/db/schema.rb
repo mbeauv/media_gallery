@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180323061055) do
+ActiveRecord::Schema.define(version: 20180323075708) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,16 @@ ActiveRecord::Schema.define(version: 20180323061055) do
     t.index ["gallery_id"], name: "index_media_gallery_image_infos_on_gallery_id"
   end
 
+  create_table "media_gallery_image_scratches", force: :cascade do |t|
+    t.string "ownable_type"
+    t.bigint "ownable_id"
+    t.bigint "image_version_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["image_version_id"], name: "index_media_gallery_image_scratches_on_image_version_id"
+    t.index ["ownable_type", "ownable_id"], name: "image_scratch_ownable_index"
+  end
+
   create_table "media_gallery_image_versions", force: :cascade do |t|
     t.string "ownable_type"
     t.bigint "ownable_id"
@@ -52,4 +62,5 @@ ActiveRecord::Schema.define(version: 20180323061055) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "media_gallery_image_scratches", "media_gallery_image_versions", column: "image_version_id"
 end

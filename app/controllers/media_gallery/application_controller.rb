@@ -19,6 +19,10 @@ module MediaGallery
       render json: { message: "Access Denied" }, status: 403
     end
 
+    rescue_from MediaGallery::ScratchImageEmpty do |exception|
+      render json: { message: 'No scratch image found.' }, status: 400
+    end
+
     def current_user
       raise 'You need to override the current_user.'
     end

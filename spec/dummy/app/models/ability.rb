@@ -3,6 +3,10 @@ class Ability
 
   def initialize(user)
 
+    can :manage, MediaGallery::ImageScratch do |scratch|
+      !user.nil? && !user.disabled? && (user.admin? || (!user.admin? && user == scratch.ownable))
+    end
+    
     can :manage, MediaGallery::Gallery do |gallery|
       !user.nil? && !user.disabled? && (user.admin? || (!user.admin? && user == gallery.ownable))
     end

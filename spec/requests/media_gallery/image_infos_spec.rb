@@ -2,6 +2,14 @@ describe "ImageInfos API", :type => :request do
 
   BASE_URL = '/media_gallery/galleries'
 
+  # Helper method that puts an image in the user's scratch pad.
+  def put_scratch_image(user)
+    b64_image = "R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
+    post "/media_gallery/image_scratches.json", params: {
+      image_scratch: { image: b64_image }
+    }, headers: { 'token' => user.token }
+  end
+
   before do
     @B64_IMAGE = "R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
     @gallery1 = create(:gallery)
@@ -10,14 +18,14 @@ describe "ImageInfos API", :type => :request do
   describe 'when showing all' do
 
     it 'returns 403 error when anonymous' do
-      delete "#{BASE_URL}/#{@gallery1.id}.json"
+      get "#{BASE_URL}/#{@gallery1.id}.json"
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
       expect(json[:message]).to eq('Access Denied')
     end
 
     it 'returns 403 error when resource not present'  do
-      delete "#{BASE_URL}/#{@gallery1.id + 11}.json", headers: { 'token' => @gallery1.ownable.token }
+      get "#{BASE_URL}/#{@gallery1.id + 11}.json", headers: { 'token' => @gallery1.ownable.token }
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
       expect(json[:message]).to eq("Access Denied")
@@ -118,29 +126,100 @@ describe "ImageInfos API", :type => :request do
 
   describe 'when creating' do
 
-    it 'returns 200 OK when resource exists' do
-      post "/media_gallery/galleries/#{@gallery1.id}/image_infos.json", params: {
-        image_info: {
-          label: "jdoe_image",
-          description: "a description",
-          image: @B64_IMAGE
+    describe 'with scratch image' do
+      it 'returns 400 when user has no scratch image' do
+        post "/media_gallery/galleries/#{@gallery1.id}/image_infos.json?use_scratch=true", params: {
+          image_info: {
+            label: "jdoe_image",
+            description: "a description"
+          }
+        }, headers: { 'token' => @gallery1.ownable.token }
+        expect(response).to have_http_status(400)
+        json = JSON.parse(response.body, { symbolize_names: true })
+        expect(json[:message]).to eq('No scratch image found.')
+      end
+
+      it 'returns 403 error when anonymous' do
+        post "/media_gallery/galleries/#{@gallery1.id}/image_infos.json?use_scratch=true", params: {
+          image_info: {
+            label: "jdoe_image",
+            description: "a description",
+            image: @B64_IMAGE
+          }
         }
-      }, headers: { 'token' => @gallery1.ownable.token }
+        expect(response).to have_http_status(403)
+        json = JSON.parse(response.body, { symbolize_names: true })
+        expect(json[:message]).to eq('Access Denied')
+      end
 
-      expect(response).to be_success
-      json = JSON.parse(response.body, { symbolize_names: true })
-      json.delete(:createdAt)
-      json.delete(:versions)
+      it 'returns 200 OK when resource exists' do
+        put_scratch_image(@gallery1.ownable)
+        post "/media_gallery/galleries/#{@gallery1.id}/image_infos.json?use_scratch=true", params: {
+          image_info: {
+            label: "jdoe_image",
+            description: "a description"
+          }
+        }, headers: { 'token' => @gallery1.ownable.token }
 
-      image = MediaGallery::ImageInfo.where(id: json[:id], label: 'jdoe_image', description: 'a description').first
-      expect(json).to eq(
-        {
+        expect(response).to be_success
+        json = JSON.parse(response.body, { symbolize_names: true })
+        json.delete(:createdAt)
+        json.delete(:versions)
+
+        image = MediaGallery::ImageInfo.where(id: json[:id], label: 'jdoe_image', description: 'a description').first
+        expect(json).to eq({
           id: image.id,
           label: image.label,
           galleryId: image.gallery.id,
           galleryName: image.gallery.name,
           description: image.description
         })
+        expect(MediaGallery::ImageScratch.where(ownable: @gallery1.ownable).count()).to eq(0)
+      end
     end
+
+    describe 'with included file' do
+
+      it 'returns 403 error when anonymous' do
+        post "/media_gallery/galleries/#{@gallery1.id}/image_infos.json", params: {
+          image_info: {
+            label: "jdoe_image",
+            description: "a description",
+            image: @B64_IMAGE
+          }
+        }
+        expect(response).to have_http_status(403)
+        json = JSON.parse(response.body, { symbolize_names: true })
+        expect(json[:message]).to eq('Access Denied')
+      end
+
+      it 'returns 200 OK when resource exists' do
+        post "/media_gallery/galleries/#{@gallery1.id}/image_infos.json", params: {
+          image_info: {
+            label: "jdoe_image",
+            description: "a description",
+            image: @B64_IMAGE
+          }
+        }, headers: { 'token' => @gallery1.ownable.token }
+
+        expect(response).to be_success
+        json = JSON.parse(response.body, { symbolize_names: true })
+        json.delete(:createdAt)
+        json.delete(:versions)
+
+        image = MediaGallery::ImageInfo.where(id: json[:id], label: 'jdoe_image', description: 'a description').first
+        expect(json).to eq(
+          {
+            id: image.id,
+            label: image.label,
+            galleryId: image.gallery.id,
+            galleryName: image.gallery.name,
+            description: image.description
+          })
+      end
+
+    end
+
   end
+
 end
