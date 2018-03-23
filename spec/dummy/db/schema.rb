@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180221155739) do
+ActiveRecord::Schema.define(version: 20180323061055) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,11 +28,19 @@ ActiveRecord::Schema.define(version: 20180221155739) do
   create_table "media_gallery_image_infos", force: :cascade do |t|
     t.string "label", null: false
     t.string "description", limit: 1024
-    t.string "image"
     t.bigint "gallery_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["gallery_id"], name: "index_media_gallery_image_infos_on_gallery_id"
+  end
+
+  create_table "media_gallery_image_versions", force: :cascade do |t|
+    t.string "ownable_type"
+    t.bigint "ownable_id"
+    t.string "image"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ownable_type", "ownable_id"], name: "image_version_ownable_index"
   end
 
   create_table "users", force: :cascade do |t|

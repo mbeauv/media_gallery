@@ -14,7 +14,7 @@ describe "Galleries API", :type => :request do
       @gallery3 = create(:gallery, ownable: @gallery1.ownable)
     end
 
-    it 'returns 403 error when anonymous' do
+    it 'returns 403 error when anonymous', :focus do
      get "#{BASE_URL}.json"
      expect(response).to have_http_status(403)
      json = JSON.parse(response.body, { symbolize_names: true })

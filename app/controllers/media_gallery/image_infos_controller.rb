@@ -18,14 +18,18 @@ module MediaGallery
     # POST /galleries/1/image_infos
     def create
       image_file = MediaGallery::ImageProcessing.create_photo_file(image_info_params['image'], {})
-      @image_info = ImageInfo.new(
-        label: image_info_params[:label],
-        description: image_info_params[:description],
-        gallery: @gallery,
-        image: image_file
-      )
-      authorize! :create, @image_info
-      @image_info.save!
+
+      ActiveRecord::Base.transaction do
+        @image_info = ImageInfo.create!(
+          label: image_info_params[:label],
+          description: image_info_params[:description],
+          gallery: @gallery,
+        )
+        ImageVersion.create!(image: image_file, ownable: @image_info)
+        authorize! :create, @image_info
+        @image_info.save!
+      end
+
     end
 
     # PATCH/PUT /galleries/1/image_infos/1

@@ -32,5 +32,10 @@ module MediaGallery
       expect(build(:image_info, gallery: @gallery, description: 'a' * 1025)).not_to be_valid
     end
 
+    it 'cascades deletion to associated image version' do
+      image_version = create(:image_info, gallery: create(:gallery))
+      expect { image_version.destroy }.to change { ImageVersion.count }.from(1).to(0)
+    end
+
   end
 end
