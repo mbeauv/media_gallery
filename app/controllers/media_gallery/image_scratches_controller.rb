@@ -22,8 +22,7 @@ module MediaGallery
         @scratch = ImageScratch.new(ownable: current_user);
         authorize! :create, @scratch
         @scratch.save!
-        image_file = MediaGallery::ImageProcessing.create_photo_file(image_scratch_params[:image], {})
-        @scratch.image_version = ImageVersion.new(image: image_file, ownable: @scratch);
+        @scratch.image_version = ImageVersion.new(image: image_scratch_params[:image], ownable: @scratch);
         @scratch.save!
       end
 
