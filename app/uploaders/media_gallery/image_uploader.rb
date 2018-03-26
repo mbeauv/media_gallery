@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'carrierwave'
+require 'carrierwave/base64'
 require 'fog'
 require 'carrierwave/orm/activerecord'
 

@@ -21,6 +21,3 @@ gem 'jbuilder', :git => 'https://github.com/mbeauv/jbuilder.git'
 
 gem 'byebug', group: [:development, :test]
 gem 'pry-byebug', group: [:development, :test]
-
-# Added at 2018-03-26 12:30:37 -0400 by mbeauv:
-gem "carrierwave-base64", "~> 2.6"
