@@ -1,5 +1,6 @@
-json.array! @gallery.image_infos.order(label: :asc) do |image_info|
+json.array! @gallery.image_infos.order(name: :asc) do |image_info|
   json.id image_info.id
-  json.label image_info.label
+  json.name image_info.name
+  json.originalUrl image_info.image_version.image.url
   json.partial! 'image_versions', image_info: image_info
 end

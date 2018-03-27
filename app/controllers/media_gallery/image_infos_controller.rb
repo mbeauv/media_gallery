@@ -43,13 +43,14 @@ module MediaGallery
 
     # Only allow a trusted parameter "white list" through.
     def image_info_params
-      params.require(:image_info).permit(:label, :description, :image)
+      params.require(:image_info).permit(:name, :description, :image)
     end
 
     def process_with_image(params, gallery)
+      raise MediaGallery::ImageMissing unless image_info_params['image'];
       ActiveRecord::Base.transaction do
         image_info = ImageInfo.create!(
-          label: image_info_params[:label],
+          name: image_info_params[:name],
           description: image_info_params[:description],
           gallery: gallery
         )
@@ -65,7 +66,7 @@ module MediaGallery
       raise MediaGallery::ScratchImageEmpty unless image_scratch;
 
       image_info = ImageInfo.new(
-        label: image_info_params[:label],
+        name: image_info_params[:name],
         description: image_info_params[:description],
         gallery: gallery,
         image_version: image_scratch.image_version

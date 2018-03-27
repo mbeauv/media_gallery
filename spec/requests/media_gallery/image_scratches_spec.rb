@@ -16,7 +16,7 @@ describe "ImageScratches API", :type => :request do
       }
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 200 OK when user exists' do
@@ -44,7 +44,7 @@ describe "ImageScratches API", :type => :request do
       get "#{@base_url}.json"
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 200 when user exists and associated scratch present' do

@@ -4,7 +4,7 @@ module MediaGallery
     include CanCan::ControllerAdditions
 
     rescue_from CanCan::AccessDenied do |exception|
-      render json: { message: "Access Denied" }, status: 403
+      render json: { message: "Access Denied." }, status: 403
     end
 
     rescue_from ActiveRecord::RecordInvalid do |exception|
@@ -12,15 +12,19 @@ module MediaGallery
     end
 
     rescue_from ActionController::ParameterMissing do |exception|
-      render json: { message: "Invalid content" }, status: 400
+      render json: { message: "Invalid content." }, status: 400
     end
 
     rescue_from ActiveRecord::RecordNotFound do |exception|
-      render json: { message: "Access Denied" }, status: 403
+      render json: { message: "Access Denied." }, status: 403
     end
 
     rescue_from MediaGallery::ScratchImageEmpty do |exception|
       render json: { message: 'No scratch image found.' }, status: 400
+    end
+
+    rescue_from MediaGallery::ImageMissing do |exception|
+      render json: { message: 'Image missing.' }, status: 400
     end
 
     def current_user

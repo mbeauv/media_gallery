@@ -8,4 +8,9 @@ module MediaGallery
   class ScratchImageEmpty < StandardError
   end
 
+  # Exception generated when an image needs to be present in the
+  # params section of the message (e.g. ImageInfoController::create).
+  class ImageMissing < StandardError
+  end
+
 end

@@ -12,12 +12,17 @@ module MediaGallery
       expect(build(:image_info, gallery: @gallery)).to be_valid
     end
 
-    it 'is not valid without a label' do
-      expect(build(:image_info, label: nil, gallery: @gallery)).not_to be_valid
+    it 'is not valid without a name' do
+      expect(build(:image_info, name: nil, gallery: @gallery)).not_to be_valid
     end
 
-    it 'is not valid with a label longer than 256 characters' do
-      expect(build(:image_info, gallery: @gallery, label: 't' * 257)).not_to be_valid
+    it 'is not valid with a name already used in the gallery' do
+      existing_info = create(:image_info, gallery: @gallery)
+      expect(build(:image_info, gallery: @gallery, name: existing_info.name)).not_to be_valid
+    end
+
+    it 'is not valid with a name longer than 256 characters' do
+      expect(build(:image_info, gallery: @gallery, name: 't' * 257)).not_to be_valid
     end
 
     it 'is not valid without a gallery' do

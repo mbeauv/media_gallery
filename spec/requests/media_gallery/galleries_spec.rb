@@ -21,7 +21,7 @@ describe "Galleries API", :type => :request do
      get "#{@base_url}.json"
      expect(response).to have_http_status(403)
      json = JSON.parse(response.body, { symbolize_names: true })
-     expect(json[:message]).to eq('Access Denied')
+     expect(json[:message]).to eq('Access Denied.')
    end
 
     it 'returns 200 when user (normal)' do
@@ -48,14 +48,14 @@ describe "Galleries API", :type => :request do
       get "#{@base_url}/#{@gallery1.id}.json"
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 403 error when resource not present' do
       get "#{@base_url}/#{@gallery1.id + 11}.json", headers: token_header(@gallery1)
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 200 when resource is present' do
@@ -79,14 +79,14 @@ describe "Galleries API", :type => :request do
       put "#{@base_url}/#{@gallery1.id}.json", headers: { token: user.token }
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 403 error when anonymous' do
       put "#{@base_url}/#{@gallery1.id}.json"
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 200 when resource is valid' do
@@ -109,14 +109,14 @@ describe "Galleries API", :type => :request do
       delete "#{@base_url}/#{@gallery1.id}.json"
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 403 error when resource not present' do
       delete "#{@base_url}/#{@gallery1.id + 11}.json", headers: { 'token' => @gallery1.ownable.token }
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq("Access Denied")
+      expect(json[:message]).to eq("Access Denied.")
     end
 
     it 'returns 200 when resource type is present' do
@@ -138,7 +138,7 @@ describe "Galleries API", :type => :request do
       }
       expect(response).to have_http_status(403)
       json = JSON.parse(response.body, { symbolize_names: true })
-      expect(json[:message]).to eq('Access Denied')
+      expect(json[:message]).to eq('Access Denied.')
     end
 
     it 'returns 200 when data is valid' do
