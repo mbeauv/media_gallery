@@ -1,1 +1,1 @@
-json.partial! 'partial_gallery', gallery: @gallery
+json.partial! 'full_gallery', gallery: @gallery

@@ -1,6 +1,5 @@
 describe "Galleries API", :type => :request do
 
-
   def token_header(gallery)
     { 'token': gallery.ownable.token }
   end
@@ -152,10 +151,11 @@ describe "Galleries API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
+      json.delete(:createdAt)
 
       gallery = MediaGallery::Gallery.where(id: json[:id], name: 'jdoe_gallery', description: 'a description').first
       expect(gallery).not_to be_nil
-      expect(json).to eq({ id: gallery.id, name: gallery.name, nbImages: 0, description: gallery.description })
+      expect(json).to eq({ id: gallery.id, name: gallery.name, description: gallery.description, imageInfos: [] })
     end
   end
 end
