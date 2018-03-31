@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    media_gallery (1.0.1)
+    media_gallery (1.1.0)
       cancancan
       carrierwave
       carrierwave-base64
@@ -351,7 +351,6 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
-  carrierwave-base64 (~> 2.6)
   factory_bot_rails
   jbuilder!
   media_gallery!

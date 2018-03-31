@@ -28,9 +28,30 @@ describe "Galleries API", :type => :request do
       expect(response).to be_success
       expect(JSON.parse(response.body, { symbolize_names: true })).to eq(
         [
-          { id: @gallery1.id, name: @gallery1.name, description: @gallery1.description, nbImages: 0 },
-          { id: @gallery2.id, name: @gallery2.name, description: @gallery2.description, nbImages: 0 },
-          { id: @gallery3.id, name: @gallery3.name, description: @gallery3.description, nbImages: 0 }
+          {
+            id: @gallery1.id,
+            name: @gallery1.name,
+            description: @gallery1.description,
+            nbImages: 0,
+            createdOn: '2018-03-31T10:36:57.813Z',
+            updatedOn: '2018-03-31T11:36:57.813Z'
+          },
+          {
+            id: @gallery2.id,
+            name: @gallery2.name,
+            description: @gallery2.description,
+            nbImages: 0,
+            createdOn: '2018-03-31T10:36:57.813Z',
+            updatedOn: '2018-03-31T11:36:57.813Z'
+          },
+          {
+            id: @gallery3.id,
+            name: @gallery3.name,
+            description: @gallery3.description,
+            nbImages: 0,
+            createdOn: '2018-03-31T10:36:57.813Z',
+            updatedOn: '2018-03-31T11:36:57.813Z'
+           }
         ]
       )
     end
@@ -62,7 +83,15 @@ describe "Galleries API", :type => :request do
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
       json.delete(:createdAt)
-      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, description: 'a test gallery', imageInfos: [] })
+      expect(json).to eq(
+        {
+          id: @gallery1.id,
+          name: @gallery1.name,
+          description: 'a test gallery',
+          nbImages: 0,
+          createdOn: '2018-03-31T10:36:57.813Z',
+          updatedOn: '2018-03-31T11:36:57.813Z'
+        })
     end
 
   end
@@ -92,8 +121,16 @@ describe "Galleries API", :type => :request do
       put "/media_gallery/galleries/#{@gallery1.id}.json", params: { gallery: { description: "updated description" } }, headers: token_header(@gallery1)
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      json.delete(:createdAt)
-      expect(json).to eq({ id: @gallery1.id, name: @gallery1.name, description: "updated description", imageInfos: [] })
+      json.delete(:updatedOn)
+      expect(json).to eq(
+        {
+          id: @gallery1.id,
+          name: @gallery1.name,
+          description: "updated description",
+          nbImages: 0,
+          createdOn: '2018-03-31T10:36:57.813Z'
+        }
+      )
     end
 
   end
@@ -151,11 +188,19 @@ describe "Galleries API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      json.delete(:createdAt)
+      json.delete(:createdOn)
+      json.delete(:updatedOn)
 
       gallery = MediaGallery::Gallery.where(id: json[:id], name: 'jdoe_gallery', description: 'a description').first
       expect(gallery).not_to be_nil
-      expect(json).to eq({ id: gallery.id, name: gallery.name, description: gallery.description, imageInfos: [] })
+      expect(json).to eq(
+        {
+          id: gallery.id,
+          name: gallery.name,
+          description: gallery.description,
+          nbImages: 0
+        }
+      )
     end
   end
 end

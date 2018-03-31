@@ -1,3 +1,3 @@
 json.array! @galleries do |gallery|
-  json.partial! 'partial_gallery', gallery: gallery
+  json.partial! 'gallery', gallery: gallery
 end

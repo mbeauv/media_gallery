@@ -40,13 +40,34 @@ describe "ImageInfos API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      json.each { |image| image.delete(:versions) }
+      json.each { |image| image.delete(:variants) }
 
       expect(json).to eq(
         [
-          { id: image3.id, name: image3.name, originalUrl: nil },
-          { id: image1.id, name: image1.name, originalUrl: nil },
-          { id: image2.id, name: image2.name, originalUrl: nil }
+          {
+            id: image3.id,
+            name: image3.name,
+            description: 'an image info description',
+            createdOn: '2018-03-31T10:36:57.813Z',
+            updatedOn: '2018-03-31T11:36:57.813Z',
+            originalUrl: nil
+          },
+          {
+            id: image1.id,
+            name: image1.name,
+            description: 'an image info description',
+            createdOn: '2018-03-31T10:36:57.813Z',
+            updatedOn: '2018-03-31T11:36:57.813Z',
+            originalUrl: nil
+          },
+          {
+            id: image2.id,
+            name: image2.name,
+            description: 'an image info description',
+            createdOn: '2018-03-31T10:36:57.813Z',
+            updatedOn: '2018-03-31T11:36:57.813Z',
+            originalUrl: nil
+          }
         ]
       )
     end
@@ -62,15 +83,15 @@ describe "ImageInfos API", :type => :request do
 
       expect(response).to be_success
       json = JSON.parse(response.body, { symbolize_names: true })
-      json.delete(:versions)
+      json.delete(:variants)
       json.delete(:createdAt)
       expect(json).to eq(
         {
           id: image1.id,
           name: image1.name,
-          galleryId: @gallery1.id,
-          galleryName: @gallery1.name,
           description: 'an image info description',
+          createdOn: '2018-03-31T10:36:57.813Z',
+          updatedOn: '2018-03-31T11:36:57.813Z',
           originalUrl: nil
         })
     end
@@ -101,15 +122,14 @@ describe "ImageInfos API", :type => :request do
 
         expect(response).to be_success
         json = JSON.parse(response.body, { symbolize_names: true })
-        json.delete(:createdAt)
-        json.delete(:versions)
+        json.delete(:updatedOn)
+        json.delete(:variants)
         expect(json).to eq(
           {
             id: image1.id,
             name: image1.name,
-            description: "updated description",
-            galleryId: @gallery1.id,
-            galleryName: @gallery1.name,
+            description: 'updated description',
+            createdOn: '2018-03-31T10:36:57.813Z',
             originalUrl: nil
           })
       end
@@ -182,16 +202,15 @@ describe "ImageInfos API", :type => :request do
 
         expect(response).to be_success
         json = JSON.parse(response.body, { symbolize_names: true })
-        json.delete(:createdAt)
+        json.delete(:createdOn)
+        json.delete(:updatedOn)
         json.delete(:originalUrl)
-        json.delete(:versions)
+        json.delete(:variants)
 
         image = MediaGallery::ImageInfo.where(id: json[:id], name: 'jdoe_image', description: 'a description').first
         expect(json).to eq({
           id: image.id,
           name: image.name,
-          galleryId: image.gallery.id,
-          galleryName: image.gallery.name,
           description: image.description
         })
         expect(MediaGallery::ImageScratch.where(ownable: @gallery1.ownable).count()).to eq(0)
@@ -237,17 +256,16 @@ describe "ImageInfos API", :type => :request do
 
         expect(response).to be_success
         json = JSON.parse(response.body, { symbolize_names: true })
-        json.delete(:createdAt)
+        json.delete(:createdOn)
+        json.delete(:updatedOn)
         json.delete(:originalUrl)
-        json.delete(:versions)
+        json.delete(:variants)
 
         image = MediaGallery::ImageInfo.where(id: json[:id], name: 'jdoe_image', description: 'a description').first
         expect(json).to eq(
           {
             id: image.id,
             name: image.name,
-            galleryId: image.gallery.id,
-            galleryName: image.gallery.name,
             description: image.description
           })
       end
